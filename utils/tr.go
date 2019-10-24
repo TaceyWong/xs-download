@@ -17,7 +17,7 @@ var LANG = func() string {
 		lang = LangZH
 	}
 	return lang
-}()
+}
 
 const (
 	LangZH = "zh_CN"
@@ -33,8 +33,6 @@ var words = []*Word{
 	{Ori: "中国", MapTo: map[string]string{LangEN: "China"}},
 	{Ori: "验证", MapTo: map[string]string{LangEN: "Verify"}},
 	{Ori: "获取密钥", MapTo: map[string]string{LangEN: "Get Key"}},
-
-
 }
 
 var Words = make(map[string]*Word)
@@ -50,8 +48,8 @@ func (w Word) String() string {
 }
 
 func Tr(text string) string {
-	if _, ok := Words[text]; ok && LANG != LangZH {
-		return Words[text].MapTo[LANG]
+	if _, ok := Words[text]; ok && LANG() != LangZH {
+		return Words[text].MapTo[LANG()]
 	} else {
 		return text
 	}

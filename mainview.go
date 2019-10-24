@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/andlabs/ui"
-	_ "github.com/andlabs/ui/winmanifest"
 	"github.com/TaceyWong/xs-download/utils"
 	"github.com/TaceyWong/xs-download/utils/open"
+	"github.com/andlabs/ui"
+	_ "github.com/andlabs/ui/winmanifest"
 )
 
 var Tr = utils.Tr
@@ -210,9 +211,8 @@ func mainview() {
 	mainwin.SetChild(tab)
 	mainwin.SetMargined(true)
 
-	tab.Append(Tr("搜索添加"),searchPage())
+	tab.Append(Tr("搜索添加"), searchPage())
 	tab.SetMargined(0, true)
-
 
 	tab.Append("基础控制", makeBasicControlsPage())
 	tab.SetMargined(0, true)
@@ -225,9 +225,8 @@ func mainview() {
 	mainwin.Show()
 }
 
-
 func login() {
-	verifyForm = ui.NewWindow(Tr("验证"), 420, 320, true)
+	verifyForm = ui.NewWindow(Tr("验证"), 420, 220, true)
 	verifyForm.OnClosing(func(*ui.Window) bool {
 		ui.Quit()
 		return true
@@ -247,18 +246,22 @@ func login() {
 	group.SetChild(entryForm)
 	user := ui.NewEntry()
 	entryForm.Append(Tr("注册名"), user, false)
-	key := ui.NewMultilineEntry()
-	entryForm.Append(Tr("密钥"), key, true)
+	key := ui.NewEntry()
+	entryForm.Append(Tr("密钥"), key, false)
 	vbox.Append(ui.NewHorizontalSeparator(), false)
 
 	hbox := ui.NewHorizontalBox()
 	hbox.SetPadded(true)
 	vbox.Append(hbox, false)
+	verifyBtn := ui.NewButton(Tr("验证"))
+	hbox.Append(verifyBtn, true)
+
+	hbox.Append(ui.NewVerticalSeparator(), false)
 	registerBtn := ui.NewButton(Tr("获取密钥"))
 	hbox.Append(registerBtn, true)
 	hbox.Append(ui.NewVerticalSeparator(), false)
-	verifyBtn := ui.NewButton(Tr("验证"))
-	hbox.Append(verifyBtn, true)
+	cancelBtn := ui.NewButton(Tr("取消"))
+	hbox.Append(cancelBtn, true)
 
 	registerBtn.OnClicked(func(*ui.Button) {
 		verifyForm.Destroy()
@@ -271,15 +274,19 @@ func login() {
 				Tr("验证错误"),
 				Tr("密钥错误或用户名和密钥不匹配"))
 		} else {
-			ui.MsgBox(verifyForm,
-				Tr("恭喜！验证成功"),
-				Tr("您已经通过用户名和密钥验证"))
 			verifyForm.Destroy()
 			mainview()
 		}
 	})
 	registerBtn.OnClicked(func(*ui.Button) {
 		open.Start("https://www.github.com/TaceyWong/xs-download")
+		ui.MsgBox(verifyForm,
+			Tr("提示"),
+			Tr("请在浏览器打开的页面查看相关信息"))
+	})
+	cancelBtn.OnClicked(func(*ui.Button) {
+		ui.Quit()
+		os.Exit(0)
 	})
 	vbox.Append(ui.NewHorizontalSeparator(), false)
 	vbox.Append(ui.NewLabel("暂无描述"), false)
@@ -294,6 +301,7 @@ func start() {
 		verifyForm.Destroy()
 		return true
 	})
+	
 	ui.Main(login)
 	fmt.Println("Start")
 }
